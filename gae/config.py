@@ -1,15 +1,21 @@
 import os
+# from os import environment
 
 # get our version id
-version = os.environ['CURRENT_VERSION_ID'].split('.')[0]
+# version = os.environ['CURRENT_VERSION_ID'].split('.')[0]
 
-# construct hostname for the current version
-# (use -dot- instead of . to avoid SSL problems)
-# see also: https://developers.google.com/appengine/kb/general#https
-host = "https://%s-dot-pebble-notes.appspot.com" % version
+environment = os.getenv('ENVIRONMENT', 'local')
 
+# Set the host based on the environment
+if environment == 'production':
+    # get our version id
+    # version = os.environ['CURRENT_VERSION_ID'].split('.')[0]
+    host = "https://pebble-notes-426618.uc.r.appspot.com"
+else:
+    host = "http://127.0.0.1:5000"
+    
 # where user will be redirected after logging in with Google
-auth_redir_uri = host+"/auth/result"
+auth_redir_uri = host+"/auth/callback"
 
 # uri for settings page (to be used in redirects)
 app_config_page = "/notes-config.html"
