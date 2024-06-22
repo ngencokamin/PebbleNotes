@@ -11,7 +11,7 @@ if environment == 'production':
 else:
     host = "http://127.0.0.1:5000"
 # where user will be redirected after logging in with Google
-auth_redir_uri = host+"/auth/result"
+auth_redir_uri = host+"/auth/callback"
 
 # uri for settings page (to be used in redirects)
 app_config_page = "/notes-config.html"
