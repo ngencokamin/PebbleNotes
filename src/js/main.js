@@ -3,12 +3,12 @@ var g_xhr_timeout = 30000;
 // Timeout for sending appmessage to Pebble, in milliseconds
 var g_msg_timeout = 8000;
 
-var g_server_url = "https://pebble-notes-426618.uc.r.appspot.com/";
+var g_server_url = "https://pebble-notes-426618.uc.r.appspot.com";
 
 var g_options = {
-	"sort_status": false,
+	"sort_status": true,
 	"sort_date": false, // false, "asc", "desc"
-	"sort_due": false, // false, "asc", "desc"
+	"sort_due": "asc", // false, "asc", "desc"
 	"sort_alpha": false,
 	"large_font": false,
 	"task_actions_position": 2, // 0=off, 1=top, 2=bottom
