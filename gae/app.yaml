@@ -1,9 +1,5 @@
-# use --project=pebble-notes for gcloud
 runtime: python310
-# api_version: 1
-# threadsafe: true
-# app_engine_apis: true
-entrypoint: gunicorn -b :$PORT main:app
+entrypoint: gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b :$PORT main:app
 
 env_variables:
   ENVIRONMENT: production
@@ -14,7 +10,7 @@ handlers:
   upload: static/index.html
 
 - url: /auth.*
-  script: auth.application
+  script: auto
 
 - url: /
   static_dir: static
