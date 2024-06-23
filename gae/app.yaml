@@ -1,5 +1,5 @@
 runtime: python310
-entrypoint: gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b :$PORT main:app
+entrypoint: uvicorn main:app --host 0.0.0.0 --port $PORT --workers 4
 
 env_variables:
   ENVIRONMENT: production
