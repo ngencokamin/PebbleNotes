@@ -1,12 +1,14 @@
+import random
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from aioredis import Redis, create_redis_pool
+from redis.asyncio import Redis
 import aiohttp
 import json
 import urllib.parse
-from config import auth_redir_uri, client_id, client_secret, redis_ip, redis_pass, secret_key
+from secret import client_id, client_secret, redis_ip, redis_pass, secret_key
+from config import auth_redir_uri
 from datetime import datetime, timedelta
 import uvicorn
 from starlette.middleware.sessions import SessionMiddleware
@@ -32,7 +34,7 @@ WORDS = (
 ).split()
 
 async def get_redis():
-    redis = await create_redis_pool(f"redis://:{redis_pass}@{redis_ip}:6379/0")
+    redis = Redis.from_url(f"redis://:{redis_pass}@{redis_ip}:6379/0")
     return redis
 
 async def query_json(url, data):
