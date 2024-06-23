@@ -7,12 +7,13 @@ import requests
 import json
 import urllib
 from config import auth_redir_uri
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = secret_key
 
 # Configure Redis
-redis_client = redis.StrictRedis(host=redis_ip, port=6379,password=redis_pass, db=0)
+redis_client = redis.StrictRedis(host=redis_ip, port=6379, password=redis_pass, db=0)
 
 # These words are used to generate word-based passcode.
 WORDS = (
@@ -77,6 +78,9 @@ def auth_callback():
     if 'error' in tokens:
         return jsonify(error=tokens['error'])
 
+    # Add token expiry time
+    tokens['expires_at'] = (datetime.now() + timedelta(seconds=tokens['expires_in'])).timestamp()
+
     passcode = generate_passcode()
     redis_client.setex(passcode, 600, json.dumps(tokens))  # Cache passcode with tokens for 10 minutes
 
@@ -109,6 +113,7 @@ class AuthRefresh:
         result = query_json("https://accounts.google.com/o/oauth2/token", q)
         if 'access_token' not in result:
             return None
+        result['expires_at'] = (datetime.now() + timedelta(seconds=result['expires_in'])).timestamp()
         return result
 
 @app.route('/refresh_token', methods=['POST'])
