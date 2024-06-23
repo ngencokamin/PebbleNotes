@@ -5,4 +5,3 @@ build
 .lock*
 *.swp
 *.vscode*
-gae/secrets.py
