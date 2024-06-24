@@ -1,7 +1,7 @@
 fastapi
 uvicorn
-aioredis
 aiohttp
+redis==4.6.0
 jinja2
 python-dotenv
-starlette
+itsdangerous
