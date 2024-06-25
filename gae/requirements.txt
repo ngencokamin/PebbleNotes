@@ -5,3 +5,4 @@ redis==4.6.0
 jinja2
 python-dotenv
 itsdangerous
+logging
