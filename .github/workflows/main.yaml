@@ -25,7 +25,7 @@ jobs:
             echo $PATH
             which jshint
             which uglifyjs
-            pebble build
+            yes | pebble build
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
