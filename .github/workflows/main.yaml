@@ -18,8 +18,8 @@ jobs:
       - name: Run the build process with Docker
         uses: addnab/docker-run-action@v3
         with:
-          image: bboehmke/pebble-dev:latest
-          options: --user root -v ${{ github.workspace }}:/pebble/ 
+          image: bboehmke/pebble-dev
+          options: --user root --rm -v ${{ github.workspace }}:/pebble/ 
           run: |
             npm install -g jshint uglify-js
             echo $PATH
