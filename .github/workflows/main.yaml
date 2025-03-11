@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
+      - name: Create build directories
+        run: mkdir -p build/{aplite,basalt,chalk,diorite,js,src,c4che,emery,include}
       - name: Run the build process with Docker
         uses: addnab/docker-run-action@v3
         with:
