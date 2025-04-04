@@ -13,19 +13,18 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
-      - name: Create build directories
-        run: mkdir -p build/{aplite,basalt,chalk,diorite,js,src,c4che,emery,include}
       - name: Run the build process with Docker
         uses: addnab/docker-run-action@v3
         with:
-          image: bboehmke/pebble-dev
+          image: ngencokamin/pebble-dev
           options: --user root --rm -v ${{ github.workspace }}:/pebble/ 
           run: |
-            npm install -g jshint uglify-js
+            npm i -g jshint uglify-js
             echo $PATH
             which jshint
             which uglifyjs
             yes | pebble build
+            mv build/pebble.pbw build/PebbleNotes.pbw
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
