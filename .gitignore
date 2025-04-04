@@ -1,6 +1,6 @@
 
 # Ignore build generated files
-build
+build/*
 
 .lock*
 *.swp
