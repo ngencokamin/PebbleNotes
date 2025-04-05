@@ -44,3 +44,6 @@ Requires active internet connection.
 
 ## Credit
 
+[MarsSoft](https://github.com/marsoft) - Wrote the original app
+
+[Cameron Aaron](https://github.com/cameronaaron) - Helped immensely in rewriting the Python auth code
