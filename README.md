@@ -1,5 +1,5 @@
 # PebbleNotes
-[![Master Build](https://github.com/ngencokamin/PebbleNotes/actions/workflows/main.yaml/badge.svg)](https://github.com/ngencokamin/PebbleNotes/actions/workflows/main.yaml)
+[![Master Build](https://github.com/ngencokamin/PebbleNotes/actions/workflows/main.yaml/badge.svg?branch=master)](https://github.com/ngencokamin/PebbleNotes/actions/workflows/main.yaml?query=branch%3Amaster)
 
 This is a Google Tasks client for Pebble smartwatch.
 It allows read-only access and an ability to mark tasks as done/undone.
