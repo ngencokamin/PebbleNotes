@@ -1,3 +1,4 @@
+name: Watch App Build
 on:
   push:
     branches:
