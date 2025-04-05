@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    window.onload = () => {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const token = params.get("access_token");
+      if (token) {
+        // Store token so the opener (notes-config.html) can access it
+        localStorage.setItem("access_token", token);
+        // Optionally notify the opener
+        if (window.opener) {
+          window.opener.postMessage({ token }, "*");
+        }
+      }
+      // Close the popup
+      window.close();
+    };
+  </script>
+</head>
+<body>
+  <p>Logging you in...</p>
+</body>
+</html>
