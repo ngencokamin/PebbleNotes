@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pebble Notes Configuration</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 10px; }
+        #logout-button { display: none; }
+        #config-options { display: none; }
+    </style>
+</head>
+<body>
+    <h2>Pebble Notes Configuration</h2>
+    <p id="login-status">Not Logged In</p>
+    <button id="login-button" class="button">Log In with Google</button>
+    <button id="logout-button" class="button">Log Out</button>
+
+    <!-- Configuration Options -->
+    <div id="config-options">
+        <h3>Settings</h3>
+        <form id="settings-form">
+            <label for="sort-options">Sort Notes:</label>
+            <select id="sort-options">
+                <option value="date">By Date</option>
+                <option value="name">By Name</option>
+            </select>
+            <br><br>
+
+            <label for="task-toggle">Show Completed Tasks:</label>
+            <input type="checkbox" id="task-toggle" />
+            <br><br>
+
+            <label for="notifications-toggle">Enable Notifications:</label>
+            <input type="checkbox" id="notifications-toggle" />
+            <br><br>
+
+            <button type="submit" class="button">Save Settings</button>
+        </form>
+    </div>
+
+    <script>
+        (function() {
+            const CLIENT_ID = "166264489885-dtb587e8886nrhrh1bvj03hfpi1sinop.apps.googleusercontent.com";
+            const REDIRECT_URI = "https://ngencokamin.github.io/PebbleNotes/callback.html"; 
+            const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=email`;
+
+            // Get and set saved settings from localStorage
+            function loadSettings() {
+                const sortOption = localStorage.getItem('sort_option') || 'date';
+                const showTasks = localStorage.getItem('show_completed_tasks') === 'true';
+                const enableNotifications = localStorage.getItem('enable_notifications') === 'true';
+
+                document.getElementById('sort-options').value = sortOption;
+                document.getElementById('task-toggle').checked = showTasks;
+                document.getElementById('notifications-toggle').checked = enableNotifications;
+            }
+
+            // Save settings to localStorage and send them to Pebble watch app
+            function saveSettings() {
+                const sortOption = document.getElementById('sort-options').value;
+                const showTasks = document.getElementById('task-toggle').checked;
+                const enableNotifications = document.getElementById('notifications-toggle').checked;
+
+                // Save settings to localStorage
+                localStorage.setItem('sort_option', sortOption);
+                localStorage.setItem('show_completed_tasks', showTasks);
+                localStorage.setItem('enable_notifications', enableNotifications);
+
+                // Send updated settings to Pebble watch app
+                Pebble.sendAppMessage({
+                    "sort_option": sortOption,
+                    "show_completed_tasks": showTasks ? 1 : 0,  // Convert boolean to integer for sending
+                    "enable_notifications": enableNotifications ? 1 : 0
+                });
+
+                alert('Settings saved!');
+            }
+
+            // Google OAuth login & logout functions
+            function getToken() {
+                return localStorage.getItem("access_token");
+            }
+
+            function getRefreshToken() {
+                return localStorage.getItem("refresh_token");
+            }
+
+            function saveTokens(accessToken, refreshToken) {
+                localStorage.setItem("access_token", accessToken);
+                if (refreshToken) {
+                    localStorage.setItem("refresh_token", refreshToken);
+                }
+            }
+
+            function isLoggedIn() {
+                return !!getToken();
+            }
+
+            function refreshToken() {
+                const refreshToken = getRefreshToken();
+                if (!refreshToken) return logout();
+
+                fetch("https://oauth2.googleapis.com/token", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams({
+                        client_id: CLIENT_ID,
+                        grant_type: "refresh_token",
+                        refresh_token: refreshToken
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.access_token) {
+                        saveTokens(data.access_token, refreshToken);
+                        updateUI(true);
+                    } else {
+                        logout();
+                    }
+                })
+                .catch(logout);
+            }
+
+            function handleAuthRedirect() {
+                const params = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = params.get("access_token");
+                const refreshToken = params.get("refresh_token");
+
+                if (accessToken) {
+                    saveTokens(accessToken, refreshToken);
+                    updateUI(true);
+                }
+            }
+
+            function login() {
+                window.open(AUTH_URL, "GoogleLogin", "width=500,height=600");
+            }
+
+            function logout() {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("refresh_token");
+                updateUI(false);
+            }
+
+            function updateUI(loggedIn) {
+                document.getElementById("login-status").innerText = loggedIn ? "Logged In" : "Not Logged In";
+                document.getElementById("login-button").style.display = loggedIn ? "none" : "block";
+                document.getElementById("logout-button").style.display = loggedIn ? "block" : "none";
+                document.getElementById("config-options").style.display = loggedIn ? "block" : "none";
+
+                if (loggedIn) {
+                    loadSettings();
+                }
+
+                Pebble.sendAppMessage({ "auth_status": loggedIn ? 1 : 0 });
+            }
+
+            // Handle form submission to save settings
+            document.getElementById('settings-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                saveSettings();
+            });
+
+            // Attach login/logout events
+            document.getElementById("login-button").addEventListener("click", login);
+            document.getElementById("logout-button").addEventListener("click", logout);
+
+            // Initial load: handle auth redirect and check login status
+            window.onload = function() {
+                handleAuthRedirect();
+                if (isLoggedIn()) {
+                    refreshToken();
+                }
+            };
+        })();
+    </script>
+</body>
+</html>
